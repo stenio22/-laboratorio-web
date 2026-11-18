@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#6842d8">
+  <title>Tabuada Quest — Aprender jogando</title>
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+  <style>
+    :root{
+      --purple:#6842d8;--purple-dark:#4d2eae;--purple-soft:#f0ebff;
+      --green:#58cc78;--green-dark:#239b50;--yellow:#ffc94a;
+      --ink:#28243a;--muted:#77748a;--line:#eceaf2;--bg:#f7f6fb;
+      --red:#ed6a72;--blue:#59b9e8;
+    }
+    *{box-sizing:border-box}
+    body{margin:0;background:var(--bg);color:var(--ink);font-family:Nunito,"Trebuchet MS",Arial,sans-serif}
+    .app-nav{background:#fff;height:72px;line-height:72px;box-shadow:0 2px 15px #2c1b5510}
+    .app-nav .nav-wrapper{padding:0 5%;display:flex;align-items:center;justify-content:space-between}
+    .brand{font-size:1.35rem;font-weight:1000;color:var(--purple);letter-spacing:-.5px}
+    .brand .brand-icon{display:inline-flex;background:var(--purple);color:#fff;width:38px;height:38px;border-radius:13px;align-items:center;justify-content:center;margin-right:9px;vertical-align:middle}
+    .nav-pill{background:#fff8e5;color:#a16b00;border:1px solid #ffebba;border-radius:30px;padding:8px 14px;font-weight:900}
+    .page{max-width:1040px;margin:0 auto;padding:34px 22px 60px}
+    .hero{background:linear-gradient(125deg,#6842d8,#8c66ed);border-radius:28px;padding:35px 38px;color:#fff;position:relative;overflow:hidden;box-shadow:0 12px 30px #6842d82c}
+    .hero:after{content:"×  ÷  +";position:absolute;right:28px;top:18px;font-size:4rem;font-weight:1000;color:#ffffff20;transform:rotate(-12deg)}
+    .hero h1{font-size:2.35rem;font-weight:1000;margin:0 0 10px;line-height:1.15;max-width:650px}
+    .hero p{font-size:1.08rem;opacity:.92;max-width:620px;margin:0}
+    .hero-stats{display:flex;gap:12px;margin-top:24px;flex-wrap:wrap}
+    .hero-stat{background:#ffffff20;border:1px solid #ffffff30;padding:9px 14px;border-radius:14px;font-weight:800}
+    .section-title{font-size:1.35rem;font-weight:1000;margin:32px 0 15px}
+    .level-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:13px}
+    .level-card{border:2px solid var(--line);background:#fff;border-radius:19px;padding:17px 10px;text-align:center;cursor:pointer;transition:.18s;min-height:118px;box-shadow:0 3px 0 #e8e5ef}
+    .level-card:hover{transform:translateY(-3px);border-color:#b9a5f4;box-shadow:0 6px 0 #e8e5ef}
+    .level-card.selected{border-color:var(--purple);background:var(--purple-soft);box-shadow:0 3px 0 #c9b9fa}
+    .level-number{font-size:2rem;font-weight:1000;color:var(--purple);line-height:1.1}
+    .level-label{font-size:.83rem;color:var(--muted);font-weight:800;margin-top:5px}
+    .level-emoji{font-size:1.25rem;margin-bottom:5px}
+    .panel{background:#fff;border:1px solid var(--line);border-radius:22px;padding:23px;box-shadow:0 5px 18px #29213c08}
+    .how-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+    .how-item{background:#fbfaff;border:1px solid var(--line);border-radius:17px;padding:17px}
+    .how-icon{width:43px;height:43px;border-radius:14px;background:var(--purple-soft);color:var(--purple);display:flex;align-items:center;justify-content:center;font-size:1.5rem;margin-bottom:10px}
+    .how-item strong{display:block;font-size:1rem;margin-bottom:4px}
+    .how-item p{margin:0;color:var(--muted);font-size:.88rem;line-height:1.4}
+    .primary-btn{background:var(--green)!important;border-radius:15px;height:54px;line-height:54px;padding:0 28px;font-weight:1000;text-transform:none;letter-spacing:0;box-shadow:0 5px 0 #35a957!important}
+    .primary-btn:hover{background:#4bc36d!important}
+    .secondary-btn{border:2px solid var(--line);border-radius:13px;background:#fff;color:var(--muted);font-weight:900;text-transform:none;box-shadow:none}
+    .muted{color:var(--muted)}
+    .center-action{text-align:center;margin:26px 0 8px}
+    .game-shell{max-width:720px;margin:0 auto}
+    .game-top{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:18px}
+    .game-progress{height:12px;border-radius:20px;background:#e9e5f4;overflow:hidden;flex:1}
+    .game-progress>div{height:100%;background:var(--green);border-radius:20px;transition:width .3s}
+    .score-chip{background:#fff;border:1px solid var(--line);padding:8px 13px;border-radius:13px;font-weight:1000;white-space:nowrap}
+    .game-card{background:#fff;border:1px solid var(--line);border-radius:25px;padding:28px;box-shadow:0 8px 25px #29213c0b}
+    .phase-label{color:var(--purple);font-size:.8rem;font-weight:1000;letter-spacing:1px;text-transform:uppercase}
+    .game-title{font-size:1.55rem;font-weight:1000;margin:6px 0 4px}
+    .question-count{color:var(--muted);font-weight:800}
+    .question{font-size:2.6rem;font-weight:1000;text-align:center;margin:28px 0 24px;letter-spacing:-1px}
+    .answer-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    .answer-option{background:#fff;border:2px solid var(--line);border-radius:15px;min-height:62px;font-size:1.25rem;font-weight:1000;color:var(--ink);cursor:pointer;transition:.15s}
+    .answer-option:hover{border-color:#b9a5f4;background:#faf8ff}
+    .answer-option:disabled{cursor:default}
+    .answer-option.correct{background:#e9f9ee;border-color:var(--green);color:#188744}
+    .answer-option.wrong{background:#fff0f0;border-color:var(--red);color:#c33e48}
+    .tf-grid{display:grid;grid-template-columns:1fr 1fr;gap:13px}
+    .tf-btn{border:0;border-radius:17px;padding:22px 10px;color:#fff;font-size:1.1rem;font-weight:1000;cursor:pointer;box-shadow:0 5px 0 #00000018}
+    .tf-true{background:#42bd70}.tf-false{background:#ed7379}
+    .type-row{display:flex;gap:10px;max-width:390px;margin:0 auto}
+    .type-input{height:56px!important;text-align:center!important;font-size:1.7rem!important;font-weight:1000!important;border:2px solid var(--line)!important;border-radius:14px!important;box-shadow:none!important;margin:0!important;padding:0 12px!important}
+    .type-input:focus{border-color:var(--purple)!important;box-shadow:none!important}
+    .feedback{margin-top:18px;padding:14px 16px;border-radius:14px;font-weight:900;display:none}
+    .feedback.good{display:block;background:#eaf9ef;color:#218348}
+    .feedback.bad{display:block;background:#fff0f0;color:#bd414a}
+    .feedback small{display:block;font-weight:700;margin-top:3px}
+    .continue-row{text-align:center;margin-top:18px;display:none}
+    .game-mascot{text-align:center;font-size:3.2rem;margin:3px 0}
+    .timer{display:inline-flex;align-items:center;gap:5px;background:#fff6df;color:#9b6a00;border-radius:12px;padding:7px 12px;font-weight:1000}
+    .result-hero{text-align:center;padding:26px 10px 12px}
+    .result-hero .trophy{font-size:4rem}
+    .result-hero h2{font-size:2rem;font-weight:1000;margin:5px 0}
+    .result-score{font-size:3rem;font-weight:1000;color:var(--purple)}
+    .result-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:20px 0}
+    .result-stat{background:#faf9fd;border:1px solid var(--line);border-radius:15px;padding:15px;text-align:center}
+    .result-stat strong{display:block;font-size:1.45rem;font-weight:1000}
+    .result-stat span{font-size:.8rem;color:var(--muted);font-weight:800}
+    .save-row{display:flex;gap:10px;max-width:470px;margin:18px auto}
+    .save-row input{margin:0!important;background:#faf9fd!important;border:1px solid var(--line)!important;border-radius:13px!important;padding:0 13px!important;box-sizing:border-box!important;height:50px!important;flex:1}
+    .save-row input:focus{border-color:var(--purple)!important;box-shadow:none!important}
+    .leader-list{margin:0}
+    .leader-list li{display:flex;align-items:center;justify-content:space-between;padding:12px 4px;border-bottom:1px solid var(--line);font-weight:800}
+    .leader-list li:last-child{border:0}
+    .rank{width:29px;height:29px;border-radius:10px;background:var(--purple-soft);color:var(--purple);display:inline-flex;align-items:center;justify-content:center;margin-right:10px;font-weight:1000}
+    .hidden{display:none!important}
+    .toast{border-radius:12px}
+    footer{text-align:center;color:#aaa6b5;font-size:.8rem;padding:25px}
+    @media(max-width:700px){
+      .page{padding:22px 14px 45px}.hero{padding:26px 22px}.hero h1{font-size:1.85rem}.hero:after{font-size:2.8rem;right:12px}
+      .level-grid{grid-template-columns:repeat(2,1fr)}.how-grid{grid-template-columns:1fr}
+      .game-card{padding:21px 16px}.question{font-size:2.2rem}.result-grid{grid-template-columns:1fr 1fr}
+      .app-nav .nav-wrapper{padding:0 16px}.brand{font-size:1.1rem}
+    }
+  </style>
+</head>
+<body>
+  <nav class="app-nav">
+    <div class="nav-wrapper">
+      <div class="brand"><span class="brand-icon"><i class="material-icons">auto_awesome</i></span>Tabuada Quest</div>
+      <div class="nav-pill"><i class="material-icons tiny" style="vertical-align:middle">stars</i> Aprender é uma aventura!</div>
+    </div>
+  </nav>
+
+  <main class="page">
+    <section id="homeScreen">
+      <div class="hero">
+        <h1>Pequenos desafios.<br>Grandes conquistas! 🚀</h1>
+        <p>Domine a tabuada jogando. Escolha sua missão, ganhe pontos e avance até virar um mestre da multiplicação!</p>
+        <div class="hero-stats">
+          <span class="hero-stat"><i class="material-icons tiny" style="vertical-align:middle">sports_esports</i> 3 minigames</span>
+          <span class="hero-stat"><i class="material-icons tiny" style="vertical-align:middle">bolt</i> 9 desafios por partida</span>
+          <span class="hero-stat"><i class="material-icons tiny" style="vertical-align:middle">emoji_events</i> Pontos e níveis</span>
+        </div>
+      </div>
+
+      <h2 class="section-title">🎯 Escolha sua tabuada</h2>
+      <p class="muted" style="margin-top:-8px">Selecione um número para começar sua missão.</p>
+      <div class="level-grid" id="levelGrid"></div>
+
+      <h2 class="section-title">🕹️ Como funciona a aventura?</h2>
+      <div class="how-grid">
+        <div class="how-item"><div class="how-icon"><i class="material-icons">casino</i></div><strong>1. Jogos surpresa</strong><p>Três minigames aparecem em uma ordem diferente a cada partida.</p></div>
+        <div class="how-item"><div class="how-icon"><i class="material-icons">military_tech</i></div><strong>2. Ganhe XP</strong><p>Acumule pontos acertando, mantenha sua sequência e conclua as fases.</p></div>
+        <div class="how-item"><div class="how-icon"><i class="material-icons">emoji_events</i></div><strong>3. Entre no mural</strong><p>Ao terminar, registre seu nome e compare sua pontuação no placar deste dispositivo.</p></div>
+      </div>
+      <div class="center-action">
+        <button class="btn-large primary-btn waves-effect waves-light" id="startBtn" disabled>Escolha uma tabuada para começar <i class="material-icons right">rocket_launch</i></button>
+      </div>
+      <section class="panel" style="margin-top:28px">
+        <h3 class="section-title" style="margin:0 0 12px">🏆 Mural dos campeões</h3>
+        <p class="muted" style="margin-top:0">As melhores pontuações salvas neste navegador.</p>
+        <ul class="leader-list" id="leaderboard"><li class="muted">Ainda não há campeões. Seja o primeiro!</li></ul>
+      </section>
+    </section>
+
+    <section id="gameScreen" class="hidden">
+      <div class="game-shell">
+        <div class="game-top">
+          <button class="btn-flat secondary-btn" id="quitBtn"><i class="material-icons left">close</i>Sair</button>
+          <div class="game-progress"><div id="progressFill" style="width:0%"></div></div>
+          <div class="score-chip">⭐ <span id="scoreTop">0</span></div>
+        </div>
+        <div class="game-card">
+          <div class="game-top" style="margin-bottom:8px">
+            <div><div class="phase-label" id="phaseLabel">FASE 1 DE 3</div><div class="game-title" id="gameTitle">Escolha a resposta</div></div>
+            <div class="question-count" id="questionCount">1 / 3</div>
+          </div>
+          <div class="game-mascot" id="mascot">🦊</div>
+          <div id="questionArea"></div>
+          <div id="feedback" class="feedback"></div>
+          <div class="continue-row" id="continueRow"><button class="btn-large primary-btn" id="continueBtn">Continuar <i class="material-icons right">arrow_forward</i></button></div>
+        </div>
+        <p class="center muted" style="font-weight:800;margin-top:16px">Tabuada do <span id="chosenTable">2</span> · Cada resposta é uma nova chance de aprender!</p>
+      </div>
+    </section>
+
+    <section id="resultScreen" class="hidden">
+      <div class="game-shell panel">
+        <div class="result-hero">
+          <div class="trophy" id="trophy">🏆</div>
+          <div class="phase-label">MISSÃO CONCLUÍDA</div>
+          <h2 id="resultTitle">Você conseguiu!</h2>
+          <p class="muted">Você completou os três minigames. Continue praticando para ficar ainda melhor!</p>
+          <div class="result-score"><span id="finalScore">0</span> XP</div>
+        </div>
+        <div class="result-grid">
+          <div class="result-stat"><strong id="correctStat">0/9</strong><span>Respostas certas</span></div>
+          <div class="result-stat"><strong id="accuracyStat">0%</strong><span>Aproveitamento</span></div>
+          <div class="result-stat"><strong id="bestStreakStat">0</strong><span>Maior sequência</span></div>
+        </div>
+        <div class="panel" style="background:#faf9fd;box-shadow:none">
+          <h3 style="font-size:1.1rem;font-weight:1000;margin:0 0 8px">📌 Resumo da missão</h3>
+          <div id="gameSummary" class="muted"></div>
+        </div>
+        <h3 class="section-title" style="text-align:center;margin:23px 0 5px">Quer entrar para o mural?</h3>
+        <p class="center muted" style="margin-top:0">Digite seu nome para salvar sua pontuação neste dispositivo.</p>
+        <div class="save-row">
+          <input id="playerName" type="text" maxlength="18" placeholder="Seu nome ou apelido" aria-label="Seu nome">
+          <button class="btn primary-btn" style="height:50px;line-height:50px;padding:0 17px" id="saveScoreBtn">Salvar</button>
+        </div>
+        <p class="center muted" id="saveMessage" style="font-weight:800"></p>
+        <div class="center" style="margin-top:18px;display:flex;gap:10px;justify-content:center;flex-wrap:wrap">
+          <button class="btn-large primary-btn" id="againBtn">Jogar novamente <i class="material-icons right">replay</i></button>
+          <button class="btn-large secondary-btn" id="homeBtn">Voltar ao início</button>
+        </div>
+      </div>
+    </section>
+  </main>
+  <footer>Tabuada Quest · Feito para aprender brincando 💜</footer>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+  <script>
+    const $ = id => document.getElementById(id);
+    const games = [
+      {id:'choice', title:'Escolha a resposta', subtitle:'Quatro opções. Uma resposta certa!', mascot:'🦊'},
+      {id:'truefalse', title:'Verdadeiro ou falso', subtitle:'Será que essa conta está correta?', mascot:'🐼'},
+      {id:'speed', title:'Desafio relâmpago', subtitle:'Pense rápido e digite o resultado!', mascot:'🐯'}
+    ];
+    let selectedTable = null, gameOrder = [], gameIndex = 0, questionIndex = 0;
+    let score = 0, correct = 0, streak = 0, bestStreak = 0, answered = false;
+    let currentQuestion = null, currentGameCorrect = 0, gameResults = [];
+    let timerInterval = null, timeLeft = 12, speedBonus = 0;
+
+    function shuffle(arr){const a=[...arr];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+    function renderLevels(){
+      const emojis=['🌱','🐣','🐸','🦋','🦄','🐬','🦁','🐉','🚀','👑'];
+      $('levelGrid').innerHTML=Array.from({length:10},(_,i)=>`
+        <button class="level-card" data-level="${i+1}" aria-label="Tabuada do ${i+1}">
+          <div class="level-emoji">${emojis[i]}</div><div class="level-number">${i+1}</div><div class="level-label">Tabuada do ${i+1}</div>
+        </button>`).join('');
+      document.querySelectorAll('.level-card').forEach(card=>card.addEventListener('click',()=>{
+        selectedTable=Number(card.dataset.level);
+        document.querySelectorAll('.level-card').forEach(c=>c.classList.toggle('selected',c===card));
+        $('startBtn').disabled=false;
+        $('startBtn').innerHTML=`Começar tabuada do ${selectedTable} <i class="material-icons right">rocket_launch</i>`;
+      }));
+    }
+    function loadBoard(){
+      const scores=JSON.parse(localStorage.getItem('tabuadaQuestBoard')||'[]');
+      const board=$('leaderboard');
+      if(!scores.length){board.innerHTML='<li class="muted">Ainda não há campeões. Seja o primeiro!</li>';return;}
+      board.innerHTML=scores.slice(0,8).map((s,i)=>`<li><span><span class="rank">${i+1}</span>${escapeHTML(s.name)} <small class="muted">· tabuada ${s.table}</small></span><strong>⭐ ${s.score} XP</strong></li>`).join('');
+    }
+    function escapeHTML(str){return String(str).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+    function showScreen(id){['homeScreen','gameScreen','resultScreen'].forEach(s=>$(s).classList.toggle('hidden',s!==id));window.scrollTo({top:0,behavior:'smooth'});}
+    function startGame(){
+      if(!selectedTable)return;
+      score=0;correct=0;streak=0;bestStreak=0;gameIndex=0;questionIndex=0;gameResults=[];
+      gameOrder=shuffle(games);
+      $('chosenTable').textContent=selectedTable;
+      showScreen('gameScreen');renderQuestion();
+    }
+    function makeQuestion(){
+      const multiplier=Math.floor(Math.random()*10)+1;
+      return {a:selectedTable,b:multiplier,answer:selectedTable*multiplier};
+    }
+    function renderQuestion(){
+      clearInterval(timerInterval);answered=false;currentGameCorrect=gameResults[gameIndex]?.correct||0;
+      const game=gameOrder[gameIndex];
+      currentQuestion=makeQuestion();
+      $('phaseLabel').textContent=`FASE ${gameIndex+1} DE 3`;
+      $('gameTitle').textContent=game.title;
+      $('questionCount').textContent=`${questionIndex+1} / 3`;
+      $('mascot').textContent=game.mascot;
+      $('scoreTop').textContent=score;
+      $('progressFill').style.width=`${((gameIndex*3+questionIndex)/9)*100}%`;
+      $('feedback').className='feedback';$('feedback').innerHTML='';
+      $('continueRow').style.display='none';
+      if(game.id==='choice')renderChoice();
+      if(game.id==='truefalse')renderTrueFalse();
+      if(game.id==='speed')renderSpeed();
+    }
+    function renderChoice(){
+      const q=currentQuestion;
+      const options=new Set([q.answer]);
+      while(options.size<4){let n=q.answer+Math.floor(Math.random()*19)-9;if(n>=0&&n!==q.answer)options.add(n);}
+      const shuffled=shuffle([...options]);
+      $('questionArea').innerHTML=`<p class="center muted" style="font-weight:900">${games[0].subtitle}</p><div class="question">${q.a} × ${q.b} = ?</div><div class="answer-grid">${shuffled.map(n=>`<button class="answer-option" data-answer="${n}">${n}</button>`).join('')}</div>`;
+      document.querySelectorAll('.answer-option').forEach(btn=>btn.addEventListener('click',()=>checkAnswer(Number(btn.dataset.answer),btn)));
+    }
+    function renderTrueFalse(){
+      const q=currentQuestion, isTrue=Math.random()>.38;
+      const shown=isTrue?q.answer:Math.max(0,q.answer+(Math.random()>.5?1:-1)*(Math.floor(Math.random()*5)+1));
+      currentQuestion.expected=isTrue;
+      $('questionArea').innerHTML=`<p class="center muted" style="font-weight:900">A conta está certa ou errada?</p><div class="question">${q.a} × ${q.b} = ${shown}</div><div class="tf-grid"><button class="tf-btn tf-true" data-answer="true">✓ Verdadeiro</button><button class="tf-btn tf-false" data-answer="false">✕ Falso</button></div>`;
+      document.querySelectorAll('.tf-btn').forEach(btn=>btn.addEventListener('click',()=>checkAnswer((btn.dataset.answer==='true')===isTrue,btn)));
+    }
+    function renderSpeed(){
+      speedBonus=0;
+      $('questionArea').innerHTML=`<p class="center muted" style="font-weight:900">Digite o resultado antes que o tempo acabe!</p><div class="timer center" style="display:flex;width:max-content;margin:0 auto"><i class="material-icons tiny">timer</i><span id="timerValue">12</span>s</div><div class="question">${currentQuestion.a} × ${currentQuestion.b} = ?</div><form class="type-row" id="speedForm"><input class="type-input" id="speedAnswer" type="number" inputmode="numeric" autocomplete="off" placeholder="?" aria-label="Resultado"><button class="btn primary-btn" type="submit" style="height:56px;line-height:56px;padding:0 19px">OK</button></form>`;
+      $('speedAnswer').focus();
+      $('speedForm').addEventListener('submit',e=>{e.preventDefault();if(answered)return;clearInterval(timerInterval);speedBonus=timeLeft>0?timeLeft*2:0;checkAnswer(Number($('speedAnswer').value),null);});
+      timeLeft=12;
+      timerInterval=setInterval(()=>{timeLeft--;const t=$('timerValue');if(t)t.textContent=timeLeft;if(timeLeft<=0){clearInterval(timerInterval);if(!answered)checkAnswer(null,null,true);}},1000);
+    }
+    function checkAnswer(value,button,timedOut=false){
+      if(answered)return;answered=true;clearInterval(timerInterval);
+      const game=gameOrder[gameIndex],q=currentQuestion;
+      let isCorrect;
+      if(game.id==='truefalse')isCorrect=value===true;
+      else isCorrect=value===q.answer;
+      if(game.id==='truefalse')isCorrect=value;
+      const buttons=document.querySelectorAll('.answer-option,.tf-btn');
+      buttons.forEach(b=>{b.disabled=true;if(game.id==='choice'&&Number(b.dataset.answer)===q.answer)b.classList.add('correct');});
+      if(button&&game.id==='choice'&&!isCorrect)button.classList.add('wrong');
+      if(isCorrect){
+        correct++;streak++;bestStreak=Math.max(bestStreak,streak);
+        const points=game.id==='speed'?20+speedBonus:game.id==='truefalse'?15:15;
+        score+=points+(streak>1?5:0);
+        $('feedback').className='feedback good';
+        $('feedback').innerHTML=`<i class="material-icons tiny" style="vertical-align:middle">check_circle</i> Muito bem! +${points+(streak>1?5:0)} XP <small>${q.a} × ${q.b} = ${q.answer}. Você está mandando muito bem!</small>`;
+      }else{
+        streak=0;
+        $('feedback').className='feedback bad';
+        $('feedback').innerHTML=`<i class="material-icons tiny" style="vertical-align:middle">lightbulb</i> ${timedOut?'O tempo acabou!':'Quase lá!'} A resposta é ${q.answer}. <small>${q.a} × ${q.b} = ${q.answer}. Errar faz parte do aprendizado. Vamos para a próxima!</small>`;
+        if(game.id==='choice')buttons.forEach(b=>{if(Number(b.dataset.answer)===q.answer)b.classList.add('correct');});
+      }
+      $('scoreTop').textContent=score;
+      $('continueRow').style.display='block';
+      $('continueBtn').innerHTML=questionIndex===2?(gameIndex===2?'Ver resultado':'Próxima fase')+' <i class="material-icons right">arrow_forward</i>':'Continuar <i class="material-icons right">arrow_forward</i>';
+    }
+    function nextQuestion(){
+      if(!answered)return;
+      if(questionIndex<2){questionIndex++;renderQuestion();return;}
+      const right=gameResults[gameIndex]?.correct||0;
+      const thisGameRight=right + (correct - gameResults.reduce((s,g)=>s+g.correct,0));
+      gameResults.push({title:gameOrder[gameIndex].title,correct:thisGameRight});
+      if(gameIndex<2){gameIndex++;questionIndex=0;renderQuestion();}else finishGame();
+    }
+    function finishGame(){
+      clearInterval(timerInterval);
+      $('progressFill').style.width='100%';
+      $('finalScore').textContent=score;
+      $('correctStat').textContent=`${correct}/9`;
+      $('accuracyStat').textContent=`${Math.round(correct/9*100)}%`;
+      $('bestStreakStat').textContent=bestStreak;
+      $('resultTitle').textContent=correct>=8?'Incrível! Você é fera!':correct>=5?'Muito bem! Continue assim!':'Missão cumprida!';
+      $('trophy').textContent=correct>=8?'🏆':correct>=5?'🌟':'💪';
+      $('gameSummary').innerHTML=gameResults.map(g=>`<p style="margin:7px 0"><strong>${escapeHTML(g.title)}:</strong> ${g.correct}/3 acertos</p>`).join('');
+      $('saveMessage').textContent='';$('playerName').value='';
+      showScreen('resultScreen');
+    }
+    function saveScore(){
+      const name=$('playerName').value.trim();
+      if(!name){M.toast({html:'Digite seu nome ou apelido para salvar!'});$('playerName').focus();return;}
+      const scores=JSON.parse(localStorage.getItem('tabuadaQuestBoard')||'[]');
+      scores.push({name,score,table:selectedTable,date:new Date().toISOString()});
+      scores.sort((a,b)=>b.score-a.score);
+      localStorage.setItem('tabuadaQuestBoard',JSON.stringify(scores.slice(0,30)));
+      $('saveMessage').textContent='Pontuação salva no mural deste dispositivo! 🎉';
+      $('saveScoreBtn').disabled=true;
+      loadBoard();
+    }
+    function backHome(){clearInterval(timerInterval);$('saveScoreBtn').disabled=false;showScreen('homeScreen');loadBoard();}
+    $('startBtn').addEventListener('click',startGame);
+    $('continueBtn').addEventListener('click',nextQuestion);
+    $('quitBtn').addEventListener('click',()=>{if(confirm('Deseja sair desta missão? Seu progresso desta partida será perdido.'))backHome();});
+    $('saveScoreBtn').addEventListener('click',saveScore);
+    $('againBtn').addEventListener('click',()=>{$('saveScoreBtn').disabled=false;startGame();});
+    $('homeBtn').addEventListener('click',backHome);
+    renderLevels();loadBoard();
+  </script>
+</body>
+</html>
